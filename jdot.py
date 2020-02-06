@@ -70,6 +70,37 @@ def jdot_krr(X,y,Xtest,gamma_g=1, numIterBCD = 10, alpha=1,lambd=1e1,
 
         C=alpha*C0+fcost
             
+    return g,np.sum(G*(fcost))
+
+def ot_krr(X,y,Xtest,G0,gamma_g=1, numIterBCD = 10, alpha=1,lambd=1e1, 
+             method='emd',reg=1,ktype='linear'):
+    # Initializations
+    n = X.shape[0]
+    ntest = Xtest.shape[0]
+    wa=np.ones((n,))/n
+    wb=np.ones((ntest,))/ntest
+
+    # original loss
+    C0=cdist(X,Xtest,metric='sqeuclidean')
+    #print np.max(C0)
+    C0=C0/np.median(C0)
+
+    # classifier    
+    g = classif.KRRClassifier(lambd)
+
+    # compute kernels
+    if ktype=='rbf':
+        Kt=sklearn.metrics.pairwise.rbf_kernel(Xtest,Xtest,gamma=gamma_g)
+    else:
+        Kt=sklearn.metrics.pairwise.linear_kernel(Xtest,Xtest)
+
+    C = C0#+ cdist(y,ypred,metric='sqeuclidean')
+    k=0
+    G = G0
+    Yst=ntest*G.T.dot(y)
+    g.fit(Kt,Yst)
+    ypred=g.predict(Kt)
+    fcost = cdist(y,ypred,metric='sqeuclidean')
     return g,np.sum(G*(fcost))    
     
 
@@ -186,13 +217,13 @@ def jdot_nn_l2(get_model,X,Y,Xtest,ytest=[],fit_params={},reset_model=True, numI
 
     k=0
     changeLabels=False
+    G = None
     while (k<numIterBCD):# and not changeLabels:
         k=k+1
         if method=='sinkhorn':
             G = ot.sinkhorn(wa,wb,C,reg)
         if method=='emd':
             G=  ot.emd(wa,wb,C)
-
         Yst=ntest*G.T.dot(Y)
         
         if reset_model:
@@ -219,7 +250,7 @@ def jdot_nn_l2(get_model,X,Y,Xtest,ytest=[],fit_params={},reset_model=True, numI
         if len(ytest):
             TBR1=np.mean((ytest-ypred)**2)
             TBR.append(TBR1)
-            
+    
     results['ypred0']=ypred
     results['ypred']=np.argmax(ypred,1)+1
     if len(ytest):
@@ -227,6 +258,7 @@ def jdot_nn_l2(get_model,X,Y,Xtest,ytest=[],fit_params={},reset_model=True, numI
     results['clf']=g
     results['fcost']=sav_fcost
     results['totalcost']=sav_totalcost
+    results['G']= G
     return g,results    
     
 

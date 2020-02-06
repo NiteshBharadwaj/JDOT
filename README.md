@@ -53,6 +53,9 @@ We provide 3 example scripts that reproduce the Figures in the paper.
 
 * **visu_regression_nn.py** shows an exmaple of JDOT when learning a keras neural network.
 
+* **visu_jdot_fail.py** shows an exmaple of JDOT failing w.r.t OT
+
+<a href="url"><img src="imgs/Jdot_fail.PNG" align="center" height="324" width="324" ></a> <a href="url"><img src="imgs/jdot_fail_mat.PNG" align="center" height="324" width="324" ></a>
 
 
 

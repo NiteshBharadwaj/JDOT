@@ -44,7 +44,7 @@ def get_data(n,ntest):
     xt[:n2,:]-=3
       
     yt=sigma*np.random.randn(n,1)+np.sin(xt/2)
-    yt = -yt
+    yt = yt
     xt-=8
     
     return xs,ys,xt,yt
@@ -52,7 +52,7 @@ def get_data(n,ntest):
 xs,ys,xt,yt=get_data(n,ntest)
 
 fs_s = lambda x: np.sin(x/2)
-fs_t = lambda x: -np.sin((x+8)/2)
+fs_t = lambda x: np.sin((x+8)/2)
 
                        
 xvisu=np.linspace(-10,10,100)
@@ -124,7 +124,7 @@ pl.scatter(xt,yt,edgecolors='k')
 pl.plot(xvisu,fs_s(xvisu),label='Source model')
 pl.plot(xvisu,fs_t(xvisu),label='Target model')
 pl.plot(xvisu,ypred,'g',label='JDOT model')
-pl.plot(xvisu,ypred_ot,'r',label='OT model')
+#pl.plot(xvisu,ypred_ot,'r',label='OT model')
 pl.xlabel('x')
 fs=17
 
